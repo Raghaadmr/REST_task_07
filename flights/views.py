@@ -1,18 +1,23 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, DestroyAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
+import django_filters.rest_framework
+from rest_framework import filters
 
 from .models import Flight, Booking
 from .serializers import FlightSerializer, BookingSerializer, BookingDetailsSerializer, UpdateBookingSerializer, RegisterSerializer, AdminUpdateBookingSerializer
 from .permissions import IsBookingOwner, IsChangable
+from rest_framework import generics
 
 
 class FlightsList(ListAPIView):
 	queryset = Flight.objects.all()
 	serializer_class = FlightSerializer
+	filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+	search_fields = ['destination']
+	ordering_fields = '__all__'
 
-
-class BookingsList(ListAPIView):
+class BookingsList(generics.ListAPIView):
 	serializer_class = BookingSerializer
 	permission_classes = [IsAuthenticated]
 
@@ -58,5 +63,3 @@ class BookFlight(CreateAPIView):
 
 class Register(CreateAPIView):
 	serializer_class = RegisterSerializer
-
-	
